@@ -1,3 +1,51 @@
-<table width=100% height=80%><tr><td align=center valign=middle>
-<iframe width=60% height=80% src="https://www.youtube.com/embed/IMyqasy2Lco" frameborder="0"></iframe>
-</td></tr></table>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+
+body {margin: 20px;}
+body * {font-family: sans-serif;}
+#input {position: fixed; bottom: 0;}
+#input input[type=text] {width: 400px;}
+#input input {height: 40px; padding: 0 10px;}
+#output {vertical-align: top; overflow: scroll; margin-bottom: 80px;}
+#output p {margin: 0; padding: 10px;}
+#output .you {background: rgb(240, 240, 240);}
+#output .ai {background: rgb(250, 250, 250);}
+#output .name {width: 40px; text-align: right; display: inline-block; font-weight: bold;}
+
+</style>
+<script>
+
+function addMessage(name, text) {
+	const output = document.getElementById('output');
+	output.innerHTML += `<p class="${name.toLowerCase()}"><span class="name">${name}:</span> ${text}</p>`;
+	document.body.scrollBy(0, 1000);
+}
+
+window.addEventListener('load', _ => {
+	const input = document.getElementById('input');
+	input.text.focus();
+	input.addEventListener('submit', _ => {
+		const message = input.text.value;
+		input.text.value = '';
+		addMessage('You', message);
+		fetch('http://173.255.209.112:6523/app', {
+			method: 'POST',
+			body: message
+		})
+		.then(res => res.text())
+		.then(text => addMessage('AI', text));
+	});
+});
+
+</script>
+</head>
+<body>
+<div id="output"></div>
+<form id="input" onsubmit="return false;">
+	<input type="text" name="text" placeholder="Say something..." />
+	<input type="submit" value="Send" />
+</form>
+</body>
+</html>
